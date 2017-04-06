@@ -1,0 +1,21 @@
+{
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "cclark61/phpopenfw2",
+                "version": "1.3.0",
+                "source": {
+                    "url": "https://github.com/cclark61/phpOpenFW",
+                    "type": "git",
+                    "reference": "origin/master"
+                }
+            }
+        }
+    ],
+    "require": {
+        "slim/slim": "^3.0",
+        "cclark61/phpopenfw2": "1.3.*",
+        "guzzlehttp/guzzle": "^6.2"
+    }
+}
