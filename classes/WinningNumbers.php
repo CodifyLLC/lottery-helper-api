@@ -1,7 +1,7 @@
 <?php
 
 class WinningNumbers {
-    public function powerball()
+    public function powerballAll()
     {
         $response = [];
         $response['status'] = 'ok';
@@ -10,6 +10,36 @@ class WinningNumbers {
 
         $sql = 'SELECT * FROM powerball';
         $res = qdb_list('main', $sql);
+
+        $response['data'] = $res;
+
+        return $response;
+    }
+
+    public function powerballRecentRules()
+    {
+        $response = [];
+        $response['status'] = 'ok';
+        $response['message'] = 'Returned';
+
+
+        $sql = 'SELECT * FROM powerball WHERE draw_date >= ?';
+        $params = ['s', "2015-10-04"];
+        $res = qdb_exec('main', $sql, $params);
+
+        $response['data'] = $res;
+
+        return $response;
+    }
+
+    public function powerballCurrent()
+    {
+        $response = [];
+        $response['status'] = 'ok';
+        $response['message'] = 'Returned';
+
+        $sql = 'SELECT * FROM powerball ORDER BY draw_date DESC limit 1';
+        $res = qdb_first_row('main', $sql);
 
         $response['data'] = $res;
 

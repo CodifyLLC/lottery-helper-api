@@ -26,8 +26,8 @@ $data1->set_opt('charset', 'utf8');
 
 
 // Fetch and Save Powerball from Remote...
-$winningNumbers = new WinningNumbers();
-$powerballHistory = $winningNumbers->powerballFromRemote();
+$powerball = new Powerball();
+$powerballHistory = $powerball->getPowerballResultsFromRemote();
 
 $numbers = $powerballHistory['data']['result']['winning_numbers'];
 
