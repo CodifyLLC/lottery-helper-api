@@ -1,17 +1,17 @@
 <?php
 
-class Powerball {
-    
+class Classic {
+
     public $lastDrawDate;
 
     public function __construct()
     {
-        $sql = 'SELECT draw_date FROM powerball ORDER BY draw_date DESC';
+        $sql = 'SELECT draw_date FROM classic ORDER BY draw_date DESC';
         $lastDrawDate = qdb_lookup('main', $sql, 'draw_date');
 
-        $this->lastDrawDate = ($lastDrawDate !== false) ? date('Y-m-d', strtotime($lastDrawDate)) : '2010-03-01';
+        $this->lastDrawDate = ($lastDrawDate !== false) ? date('Y-m-d', strtotime($lastDrawDate)) : '2011-01-01';
     }
-
+    
     public function getUsedNumbers()
     {
         $response = [];
@@ -20,8 +20,8 @@ class Powerball {
 
 
         $sql = '
-        SELECT COUNT(*) as total, number_used FROM powerball_used_numbers 
-        WHERE is_powerball = 0 
+        SELECT COUNT(*) as total, number_used FROM classic_used_numbers 
+        WHERE is_classic = 0 
         AND number_used <= 69
         GROUP BY number_used
         ORDER BY total ASC
@@ -32,7 +32,7 @@ class Powerball {
 
         return $response;
     }
-    public function getUsedPowerNumbers()
+    public function getUsedClassicNumbers()
     {
         $response = [];
         $response['status'] = 'ok';
@@ -40,8 +40,8 @@ class Powerball {
 
 
         $sql = '
-        SELECT COUNT(*) as total, number_used FROM powerball_used_numbers 
-        WHERE is_powerball = 1 
+        SELECT COUNT(*) as total, number_used FROM classic_used_numbers 
+        WHERE is_classic = 1 
         AND number_used <= 26
         GROUP BY number_used
         ORDER BY total ASC
@@ -60,10 +60,8 @@ class Powerball {
         $response['message'] = 'Returned';
 
         $usedNumbers = $this->getUsedNumbers();
-        $usedPowerNumbers = $this->getUsedPowerNumbers();
 
-        $mostUsedNumbers = array_slice($usedNumbers['data'], -5);
-        $mostUsedPowerNumbers = array_slice($usedPowerNumbers['data'], -1);
+        $mostUsedNumbers = array_slice($usedNumbers['data'], -6);
 
         $response['data'] = [
             $mostUsedNumbers[0]['number_used'],
@@ -71,7 +69,7 @@ class Powerball {
             $mostUsedNumbers[2]['number_used'],
             $mostUsedNumbers[3]['number_used'],
             $mostUsedNumbers[4]['number_used'],
-            $mostUsedPowerNumbers[0]['number_used']
+            $mostUsedNumbers[5]['number_used']
         ];
 
         return $response;
@@ -84,10 +82,8 @@ class Powerball {
         $response['message'] = 'Returned';
 
         $usedNumbers = $this->getUsedNumbers();
-        $usedPowerNumbers = $this->getUsedPowerNumbers();
 
-        $leastUsedNumbers = array_slice($usedNumbers['data'], 5);
-        $leastUsedPowerNumbers = array_slice($usedPowerNumbers['data'], 1);
+        $leastUsedNumbers = array_slice($usedNumbers['data'], 6);
 
         $response['data'] = [
             $leastUsedNumbers[0]['number_used'],
@@ -95,7 +91,7 @@ class Powerball {
             $leastUsedNumbers[2]['number_used'],
             $leastUsedNumbers[3]['number_used'],
             $leastUsedNumbers[4]['number_used'],
-            $leastUsedPowerNumbers[0]['number_used']
+            $leastUsedNumbers[5]['number_used']
         ];
 
         return $response;
@@ -109,23 +105,22 @@ class Powerball {
         $response['message'] = 'Returned';
 
         $topNumbers = 50;
-        $topPowerNumbers = 20;
+        $topClassicNumbers = 20;
         $usedNumbers = $this->getUsedNumbers();
-        $usedPowerNumbers = $this->getUsedPowerNumbers();
 
         $mostUsedNumbers = array_slice($usedNumbers['data'], -$topNumbers);
-        $mostUsedPowerNumbers = array_slice($usedPowerNumbers['data'], -$topPowerNumbers);
 
         $uniqueIndexes = $this->generateUniqueNumbers(0, $topNumbers-1, 5);
-        $uniqueIndexPowerball = $this->generateUniqueNumbers(0, $topPowerNumbers-1, 1);
+        $uniqueIndexClassic = $this->generateUniqueNumbers(0, $topClassicNumbers-1, 1);
 
         $key0 = $uniqueIndexes[0];
         $key1 = $uniqueIndexes[1];
         $key2 = $uniqueIndexes[2];
         $key3 = $uniqueIndexes[3];
         $key4 = $uniqueIndexes[4];
+        $key5 = $uniqueIndexes[5];
 
-        $powerKey0 = $uniqueIndexPowerball[0];
+        $ClassicKey0 = $uniqueIndexClassic[0];
 
         $response['data'] = [
             $mostUsedNumbers[$key0]['number_used'],
@@ -133,7 +128,7 @@ class Powerball {
             $mostUsedNumbers[$key2]['number_used'],
             $mostUsedNumbers[$key3]['number_used'],
             $mostUsedNumbers[$key4]['number_used'],
-            $mostUsedPowerNumbers[$powerKey0]['number_used']
+            $mostUsedNumbers[$key5]['number_used']
         ];
 
         return $response;
@@ -156,7 +151,7 @@ class Powerball {
     }
 
 
-    public function getPowerballResultsFromRemote($startDate='2010-03-01', $endDate='')
+    public function getClassicResultsFromRemote($startDate='2011-01-01', $endDate='')
     {
         $response = [];
         $response['status'] = 'ok';
@@ -166,7 +161,7 @@ class Powerball {
             $endDate = date('Y-m-d');
         }
         $client = new \GuzzleHttp\Client();
-        $res = $client->request('GET', 'https://www.michiganlottery.com/v1/milotto/players/winning_numbers/past/P/'.$startDate . '/' . $endDate  . '.json?both=0');
+        $res = $client->request('GET', 'https://www.michiganlottery.com/v1/milotto/players/winning_numbers/past/6/'.$startDate . '/' . $endDate  . '.json?both=0');
         $tmpResponse = json_decode($res->getBody(), true);
 
         $response['data'] = $tmpResponse;
