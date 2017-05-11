@@ -150,6 +150,20 @@ class Classic {
 
     }
 
+    public function getClassicSample($sampleCount=100)
+    {
+        $response = [];
+        $response['status'] = 'ok';
+        $response['message'] = 'Returned';
+
+        $sampleSql = 'SELECT draw_num1, draw_num2, draw_num3, draw_num4, draw_num5, draw_num6 FROM classic ORDER BY classic_id DESC LIMIT '.$sampleCount;
+        $drawArray = qdb_list('main', $sampleSql);
+
+        $response['data'] = $drawArray;
+
+        return $response;
+    }
+
 
     public function getClassicResultsFromRemote($startDate='2011-01-01', $endDate='')
     {

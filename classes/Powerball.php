@@ -156,6 +156,21 @@ class Powerball {
     }
 
 
+    public function getPowerballSample($sampleCount=100)
+    {
+        $response = [];
+        $response['status'] = 'ok';
+        $response['message'] = 'Returned';
+
+        $sampleSql = 'SELECT draw_num1, draw_num2, draw_num3, draw_num4, draw_num5, draw_num6 FROM powerball ORDER BY powerball_id DESC LIMIT '.$sampleCount;
+        $drawArray = qdb_list('main', $sampleSql);
+
+        $response['data'] = $drawArray;
+
+        return $response;
+    }
+
+
     public function getPowerballResultsFromRemote($startDate='2010-03-01', $endDate='')
     {
         $response = [];
