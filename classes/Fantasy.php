@@ -126,6 +126,23 @@ class Fantasy {
 
     }
 
+    public function getFantasyModifiedWeights($column='weight')
+    {
+        $response = [];
+        $response['status'] = 'ok';
+        $response['message'] = 'Returned';
+
+        $sampleSql = 
+            'SELECT fantasy_weights.'.$column.' + fantasy_modifiers.current_redraw 
+            FROM fantasy_weights CROSS JOIN fantasy_modifiers 
+            WHERE fantasy_weights.fantasy_weights_id = fantasy_modifiers.fantasy_modifiers_id';
+        $drawArray = qdb_list('main', $sampleSql);
+
+        $response['data'] = $drawArray;
+
+        return $response;
+    }
+
     public function getFantasySample($sampleCount=100)
     {
         $response = [];

@@ -54,15 +54,13 @@ function setWeights($drawGame='', $sampleCount=100) {
                 break;
         }
 
-        for($i = 0; $i < $maxNumber; ++$i) {
-            array_push($gameNumbers, ($i+1));
+        for($i = 0; $i < $maxNumber; $i++) {
+            array_push($gameWeights, $i);
         }
         
         foreach ($drawArray as $draw) {
-
             foreach ($draw as &$result) {
-                $gameIndex = $result - 1;
-                ++$gameWeights[$gameIndex];
+                ++$gameWeights[($result-1)];
             }
         }
 

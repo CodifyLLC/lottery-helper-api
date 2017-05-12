@@ -11,6 +11,7 @@ use \Slim\Http\Response as Response;
 
 // Fetch and Save Powerball from Remote...
 $drawGames = ['powerball', 'fantasy', 'classic', 'mega'];
+//$drawGames = ['fantasy'];
 
 foreach ($drawGames as $drawGame) {
     setModifiers($drawGame);
@@ -40,8 +41,6 @@ function setModifiers($drawGame='') {
         }
 
         $gameNumbers = [];
-        $countMin = 0;
-        $countMax = 0;
 
         switch ($drawGame) {
             case 'powerball':
@@ -62,20 +61,18 @@ function setModifiers($drawGame='') {
                 break;
         }
 
-        for($i = 0; $i < $maxNumber; ++$i) {
-            array_push($gameNumbers, ($i+1));
+        for($i = 0; $i < $maxNumber; $i++) {
+            array_push($gameNumbers, ($i));
         }
-
 
         foreach ($gameNumbers as $number) {
             $checkArray = [];
             $min = 0;
             $max = 0;
-            $current = 0;
             $currentDay = 0;
 
             foreach ($drawArray as $key => $draw) {
-                if(array_search($number, $draw)) {
+                if(array_search(($number+1), $draw) !== false) {
                     array_push($checkArray, $key);
                 }
             }
