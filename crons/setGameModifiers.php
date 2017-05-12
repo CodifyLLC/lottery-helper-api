@@ -80,15 +80,14 @@ function setModifiers($drawGame='') {
             $checkArrayCount = count($checkArray);
 
             foreach ($checkArray as $sampleKey => $samplePosition) {
-                $nextPosition = ($sampleKey < ($checkArrayCount - 1)) ? ++$sampleKey : 0;
-                $nextValue = ($nextPosition) ? $checkArray[$nextPosition] : 0;
+                $nextValue = ($sampleKey < ($checkArrayCount-1)) ? $checkArray[($sampleKey+1)] : 0;
 
                 if($nextValue) {
                     $min = (($nextValue - $samplePosition) === 1) ? ++$min : $min;
                     $max = (($nextValue - $samplePosition) > $max) ? ($nextValue - $samplePosition): $max;
                 }
                 else {
-                    $currentDay = 99 - $samplePosition;
+                    $currentDay = (99 - $samplePosition);
                     $max = ($currentDay > $max) ? $currentDay: $max;
                 }
             }
@@ -99,7 +98,7 @@ function setModifiers($drawGame='') {
             //print $max . "\n";
             //print $current . "\n";
 
-            $params = ['dddi', $min, $max, $current, $number];
+            $params = ['dddi', $min, $max, $current, ($number+1)];
             $data1->prepare(
                 'UPDATE '.$drawGame.'_modifiers 
                 SET min_redraw = ?, max_redraw = ?, current_redraw = ?
