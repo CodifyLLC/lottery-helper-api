@@ -360,6 +360,115 @@ $app->group('/powerball', function () {
 
 
 /**
+ * Instant Games Enpoint
+ */
+$app->group('/instantGames', function () {
+    $this->map(['GET', 'DELETE', 'PATCH', 'PUT', 'POST'], '', function ($request, $response, $args) {
+        // Find, delete, patch or replace user identified by $args['id']
+    })->setName('instantGames');
+
+
+
+    /**
+     * @apiVersion 1.0.0
+     * @api {get} /instantGames/michigan michigan
+     *
+     * @apiName michigan
+     *
+     * @apiGroup instantGames
+     *
+     * @apiSuccess {String} status Status of the request. ok or fail
+     * @apiSuccess {String} message Generic message about the response
+     * @apiSuccess {String[]} data More information about the response
+
+     * @apiSuccessExample {json} Success-Response:
+     *     HTTP/1.1 200 OK
+    {
+    "status": "ok",
+    "message": "Returned",
+    "data": [
+        {
+            "releaseDate": "2017-05-01 20:00:00",
+            "image_url": "https://www2.instantticketcontest.com/MI/InstantsPlus/wp-content/uploads/2017/04/MI-1M-Gold-Rush-227-320x617.jpg",
+            "game_name": "$1,000,000 Gold Rush",
+            "prizes": [
+                {
+                    "id": "3093",
+                    "price": "10.00",
+                    "game_name": "$1,000,000 Gold Rush",
+                    "image_url": "https://www2.instantticketcontest.com/MI/InstantsPlus/wp-content/uploads/2017/04/MI-1M-Gold-Rush-227-320x617.jpg",
+                    "starting_count": "3",
+                    "remaining_count": "3",
+                    "prize": "1000000.00",
+                    "release_date": "2017-05-01 20:00:00"
+                }
+            ]
+        }
+      ]
+    }
+     */
+    $this->get('/michigan', function (Request $request, Response $response) {
+
+        $instantGames = new InstantGames();
+        $instantGames->setState('michigan');
+        $response = $response->withJson($instantGames->getAllPrizes());
+
+        return $response;
+    })->setName('instantgames-michigan');
+
+
+    /**
+     * @apiVersion 1.0.0
+     * @api {get} /instantGames/michigan michigan
+     *
+     * @apiName michigan
+     *
+     * @apiGroup instantGames
+     *
+     * @apiSuccess {String} status Status of the request. ok or fail
+     * @apiSuccess {String} message Generic message about the response
+     * @apiSuccess {String[]} data More information about the response
+
+     * @apiSuccessExample {json} Success-Response:
+     *     HTTP/1.1 200 OK
+    {
+    "status": "ok",
+    "message": "Returned",
+    "data": [
+    {
+    "releaseDate": "2017-05-01 20:00:00",
+    "image_url": "https://www2.instantticketcontest.com/MI/InstantsPlus/wp-content/uploads/2017/04/MI-1M-Gold-Rush-227-320x617.jpg",
+    "game_name": "$1,000,000 Gold Rush",
+    "prizes": [
+    {
+    "id": "3093",
+    "price": "10.00",
+    "game_name": "$1,000,000 Gold Rush",
+    "image_url": "https://www2.instantticketcontest.com/MI/InstantsPlus/wp-content/uploads/2017/04/MI-1M-Gold-Rush-227-320x617.jpg",
+    "starting_count": "3",
+    "remaining_count": "3",
+    "prize": "1000000.00",
+    "release_date": "2017-05-01 20:00:00"
+    }
+    ]
+    }
+    ]
+    }
+     */
+    $this->get('/michigan/getTop3MostRemaining', function (Request $request, Response $response) {
+
+        $price = $request->getParam('price');
+
+        $instantGames = new InstantGames();
+        $instantGames->setState('michigan');
+        $response = $response->withJson($instantGames->getTop3MostRemaining($price));
+
+        return $response;
+    })->setName('instantgames-michigan-getTop3MostRemaining');
+});
+
+
+/**
  * Run the app
  */
 $app->run();
