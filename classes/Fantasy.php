@@ -3,6 +3,7 @@
 class Fantasy {
 
     public $lastDrawDate;
+    public $modifiedWeights;
 
     public function __construct()
     {
@@ -10,6 +11,18 @@ class Fantasy {
         $lastDrawDate = qdb_lookup('main', $sql, 'draw_date');
 
         $this->lastDrawDate = ($lastDrawDate !== false) ? date('Y-m-d', strtotime($lastDrawDate)) : '2013-01-01';
+
+        $modifiedWeightsResults = $this->getModifiedWeights();
+        $data = $modifiedWeightsResults['data'];
+        $gameKey = 1;
+
+        $this->modifiedWeights = [];
+
+        foreach ($data as &$v) {
+            $key = (string)$gameKey;
+            $this->modifiedWeights[$key] = $v['fantasy_weights.weight + fantasy_modifiers.current_redraw'];
+            $gameKey++;
+        }
     }
 
     public function getUsedNumbers()
@@ -126,7 +139,7 @@ class Fantasy {
 
     }
 
-    public function getFantasyModifiedWeights($column='weight')
+    public function getModifiedWeights($column='weight')
     {
         $response = [];
         $response['status'] = 'ok';
@@ -157,6 +170,67 @@ class Fantasy {
         return $response;
     }
 
+    public function getWeightedDraw() {
+        $core = new Core();
+        $modifiedWeights = $this->modifiedWeights;
+
+        $testResults = [];
+        for($i=0; $i<5; $i++) {
+            $pick = $core->getWeightedFromSet($modifiedWeights);
+            unset($modifiedWeights[$pick]);
+            array_push($testResults, $pick);
+        }
+
+        sort($testResults);
+        return $testResults;
+    }
+
+    public function getFavoredDraw() {
+        $core = new Core();
+        $modifiedWeights = $this->modifiedWeights;
+
+        $testResults = [];
+        for($i=0; $i<5; $i++) {
+            $favoredTempArray = [];
+            for($t=0; $t<200; $t++) {
+                $tempPick = $core->getWeightedFromSet($modifiedWeights);
+                array_push($favoredTempArray, $tempPick);
+            }
+            $favoredTempArray = array_count_values($favoredTempArray);
+            arsort($favoredTempArray);
+            $favoredTempArray = array_keys($favoredTempArray);
+            $pick = $favoredTempArray[0];
+
+            unset($modifiedWeights[$pick]);
+            array_push($testResults, $pick);
+        }
+
+        sort($testResults);
+        return $testResults;
+    }
+
+
+    public function getModifiedDraw() {
+        $core = new Core();
+        $startValue = 100;
+
+        while (count($this->reduceSample($startValue)) < 5) {
+            $startValue -= 25;
+        }
+
+        $reducedSample = $this->reduceSample($startValue);
+
+        $testResults = [];
+        for($i=0; $i<5; $i++) {
+            $pick = $core->getWeightedFromSet($reducedSample);
+            unset($reducedSample[$pick]);
+            array_push($testResults, $pick);
+        }
+
+        sort($testResults);
+        return $testResults;
+    }
+
 
     public function getFantasyResultsFromRemote($startDate='2013-01-01', $endDate='')
     {
@@ -174,5 +248,16 @@ class Fantasy {
         $response['data'] = $tmpResponse;
 
         return $response;
+    }
+
+    private function reduceSample($value=100) {
+        $reducedSample = [];
+        foreach ($this->modifiedWeights as $k => $v) {
+            if($v >= $value) {
+                $reducedSample[$k] = $v;
+            }
+        }
+
+        return $reducedSample;
     }
 }
